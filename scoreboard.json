@@ -1,0 +1,28 @@
+{
+  "5": [
+    {
+      "name": "moin",
+      "turns": 6
+    },
+    {
+      "name": "moin",
+      "turns": 9
+    },
+    {
+      "name": "moin",
+      "turns": 8
+    },
+    {
+      "name": "moin",
+      "turns": 11
+    }
+  ],
+  "6": [
+    {
+      "name": "moin",
+      "turns": 14
+    }
+  ],
+  "7": [],
+  "8": []
+}

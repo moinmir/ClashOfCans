@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tin Can Shuffle</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <h1 class="retro-title">Tin Can Shuffle</h1>
+
+  <!-- Game Wrapper -->
+  <div class="game-wrapper">
+
+    <!-- Top Controls -->
+    <div class="controls">
+      <div>
+        <label for="numCans">Cans:</label>
+        <select id="numCans">
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+        </select>
+      </div>
+      <button id="startBtn">New Game</button>
+    </div>
+
+    <!-- Simple stats row -->
+    <div class="stats-row">
+      <div class="stat" id="turnsStat">Turns: 0</div>
+      <div class="stat" id="correctStat">Correct: 0</div>
+    </div>
+
+    <!-- Cans Container -->
+    <div class="cans-container" id="cansContainer"></div>
+
+    <!-- Buttons -->
+    <div class="actions">
+      <button id="checkBtn">Check</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+
+    <!-- Name form (hidden until user wins) -->
+    <div class="name-form" id="nameForm">
+      <label for="playerName">Your Name:</label>
+      <input type="text" id="playerName" maxlength="15" placeholder="1–15 chars" />
+      <button id="submitNameBtn">Submit Score</button>
+    </div>
+  </div>
+
+  <!-- Scoreboard -->
+  <div class="scoreboard">
+    <h2>Leaderboard</h2>
+    <div class="scoreboard-list" id="scoreboardList">
+      <!-- Dynamically injected scoreboard -->
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
