@@ -9,8 +9,8 @@ let lastGameResult = null;
 
 // ---------- DOM ELEMENTS ----------
 const cansContainer = document.getElementById('cansContainer');
-const numCansSelect = document.getElementById('numCans');
-const startBtn = document.getElementById('startBtn');
+const numCansRange = document.getElementById('numCansRange');
+const rangeValue = document.getElementById('rangeValue');
 const checkBtn = document.getElementById('checkBtn');
 const resetBtn = document.getElementById('resetBtn');
 const nameForm = document.getElementById('nameForm');
@@ -22,17 +22,18 @@ const correctStat = document.getElementById('correctStat');
 
 // ---------- EVENT LISTENERS ----------
 window.addEventListener('DOMContentLoaded', async () => {
-  numCansSelect.value = '5';
-  selectedNumCans = 5;
+  // Initially set rangeValue
+  rangeValue.textContent = numCansRange.value;
+  selectedNumCans = parseInt(numCansRange.value, 10);
+
   await startNewGame();
-  await fetchAndDisplayScoreboard(); // always display on load
+  await fetchAndDisplayScoreboard();
 });
 
-numCansSelect.addEventListener('change', (e) => {
+// Automatically start a new game whenever the slider changes
+numCansRange.addEventListener('input', async (e) => {
   selectedNumCans = parseInt(e.target.value, 10);
-});
-
-startBtn.addEventListener('click', async () => {
+  rangeValue.textContent = selectedNumCans;
   await startNewGame();
 });
 
@@ -65,7 +66,7 @@ async function startNewGame() {
   } while (countCorrectPositions(currentOrder, solution) > 2);
 
   renderCans(currentOrder);
-  updateStats(); // turns=0, correct=?
+  updateStats();
 }
 
 // Render the cans
@@ -74,7 +75,6 @@ function renderCans(order) {
   order.forEach((color, index) => {
     const can = document.createElement('div');
     can.classList.add('can');
-    // Use .style.color for the can’s “fill” color (via ::before)
     can.style.color = color;
     can.dataset.index = index;
 
@@ -89,7 +89,7 @@ function renderCans(order) {
   });
 }
 
-// Count correctness
+// Check correctness
 function checkGuess() {
   turns++;
   const correctCount = countCorrectPositions(currentOrder, solution);
@@ -103,14 +103,14 @@ function checkGuess() {
   updateStats();
 }
 
-// Update the small stat counters
+// Update stats
 function updateStats() {
   turnsStat.textContent = `Turns: ${turns}`;
   const correctCount = countCorrectPositions(currentOrder, solution);
   correctStat.textContent = `Correct: ${correctCount}`;
 }
 
-// Helper: count correct positions
+// Count correct positions
 function countCorrectPositions(arr1, arr2) {
   let count = 0;
   for (let i = 0; i < arr1.length; i++) {
@@ -119,7 +119,7 @@ function countCorrectPositions(arr1, arr2) {
   return count;
 }
 
-// Shuffle
+// Shuffle array
 function shuffleArray(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -173,7 +173,7 @@ function displayScoreboard(scoreboardData) {
   scoreboardList.innerHTML = '';
   const table = document.createElement('table');
 
-  const sortedKeys = Object.keys(scoreboardData).sort((a, b) => +b - +a);
+  const sortedKeys = Object.keys(scoreboardData).sort((a, b) => +a - +b);
   sortedKeys.forEach(canCountKey => {
     const scores = scoreboardData[canCountKey];
     if (scores.length > 0) {

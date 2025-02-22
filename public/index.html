@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta charset="UTF-8" />
   <title>Clash of Cans</title>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -12,18 +12,11 @@
   <!-- Game Wrapper -->
   <div class="game-wrapper">
 
-    <!-- Top Controls -->
+    <!-- Controls with slider -->
     <div class="controls">
-      <div>
-        <label for="numCans">Cans:</label>
-        <select id="numCans">
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-        </select>
-      </div>
-      <button id="startBtn">New Game</button>
+      <label for="numCansRange">Cans:</label>
+      <input type="range" id="numCansRange" min="5" max="8" value="5" />
+      <span id="rangeValue">5</span>
     </div>
 
     <!-- Simple stats row -->

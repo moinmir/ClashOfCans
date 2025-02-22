@@ -8,10 +8,10 @@ const app = express();
 // Middleware
 app.use(express.json());
 
-// Serve static files from /public
+// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Endpoint to get scoreboard
+// Get scoreboard
 app.get('/api/scores', (req, res) => {
   const scoreboardPath = path.join(__dirname, 'scoreboard.json');
   fs.readFile(scoreboardPath, 'utf8', (err, data) => {
@@ -29,7 +29,7 @@ app.get('/api/scores', (req, res) => {
   });
 });
 
-// Endpoint to post a new score
+// Post a new score
 app.post('/api/scores', (req, res) => {
   const { canCount, turns, name } = req.body;
   if (!canCount || !turns || !name) {
@@ -53,7 +53,6 @@ app.post('/api/scores', (req, res) => {
       return res.status(500).json({ error: 'Internal server error' });
     }
 
-    // Ensure the scoreboard has an array for this canCount
     if (!scoreboard[canCount]) {
       scoreboard[canCount] = [];
     }
@@ -69,7 +68,7 @@ app.post('/api/scores', (req, res) => {
   });
 });
 
-// Start the server
+// Start server
 app.listen(PORT, () => {
-  console.log(`Tin Can Shuffle server running on http://localhost:${PORT}`);
+  console.log(`Clash of Cans server running on http://localhost:${PORT}`);
 });
