@@ -84,6 +84,11 @@ function renderCans(order) {
     can.addEventListener('dragover', handleDragOver);
     can.addEventListener('drop', handleDrop);
     can.addEventListener('dragend', handleDragEnd);
+    
+    // Add touch events for mobile support (especially iOS)
+    can.addEventListener('touchstart', handleTouchStart, {passive: false});
+    can.addEventListener('touchmove', handleTouchMove, {passive: false});
+    can.addEventListener('touchend', handleTouchEnd, {passive: false});
 
     cansContainer.appendChild(can);
   });
@@ -131,6 +136,9 @@ function shuffleArray(arr) {
 
 // ---------- DRAG & DROP ----------
 let draggedIndex = null;
+let touchedElement = null;
+let originalX = 0;
+let originalY = 0;
 
 function handleDragStart(e) {
   draggedIndex = parseInt(e.target.dataset.index, 10);
@@ -156,6 +164,71 @@ function handleDragEnd(e) {
 function swapPositions(arr, i, j) {
   [arr[i], arr[j]] = [arr[j], arr[i]];
   draggedIndex = j;
+}
+
+// Touch events for iOS support
+function handleTouchStart(e) {
+  e.preventDefault(); // Prevent default touch behavior (like scrolling and text selection)
+  
+  if (touchedElement) return; // Already touching an element
+  
+  touchedElement = e.target;
+  draggedIndex = parseInt(touchedElement.dataset.index, 10);
+  touchedElement.classList.add('dragging');
+  
+  // Store original position
+  const touch = e.touches[0];
+  originalX = touch.clientX;
+  originalY = touch.clientY;
+}
+
+function handleTouchMove(e) {
+  e.preventDefault(); // Prevent scrolling
+  
+  if (!touchedElement) return;
+  
+  const touch = e.touches[0];
+  
+  // Find the element at this position
+  const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+  
+  if (elemBelow && elemBelow.classList.contains('can') && 
+      elemBelow !== touchedElement) {
+    elemBelow.classList.add('touch-hover');
+  }
+  
+  // Remove the hover class from all other cans
+  document.querySelectorAll('.can.touch-hover').forEach(can => {
+    if (can !== elemBelow) {
+      can.classList.remove('touch-hover');
+    }
+  });
+}
+
+function handleTouchEnd(e) {
+  e.preventDefault();
+  
+  if (!touchedElement) return;
+  
+  // Remove any hover effects
+  document.querySelectorAll('.can.touch-hover').forEach(can => {
+    can.classList.remove('touch-hover');
+  });
+  
+  // Find the element at the final touch position
+  const touch = e.changedTouches[0];
+  const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+  
+  if (elemBelow && elemBelow.classList.contains('can') && 
+      elemBelow !== touchedElement) {
+    const targetIndex = parseInt(elemBelow.dataset.index, 10);
+    swapPositions(currentOrder, draggedIndex, targetIndex);
+    renderCans(currentOrder);
+  }
+  
+  // Cleanup
+  touchedElement.classList.remove('dragging');
+  touchedElement = null;
 }
 
 // ---------- SCOREBOARD ----------
