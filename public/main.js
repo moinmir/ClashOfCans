@@ -60,10 +60,10 @@ async function startNewGame() {
   const chosenColors = COLORS.slice(0, selectedNumCans);
   solution = shuffleArray(chosenColors);
 
-  // Create an initial arrangement that does NOT exceed 2 correct positions
+  // Create an initial arrangement with exactly 1 can in the correct position
   do {
     currentOrder = shuffleArray([...solution]);
-  } while (countCorrectPositions(currentOrder, solution) > 2);
+  } while (countCorrectPositions(currentOrder, solution) !== 1);
 
   renderCans(currentOrder);
   updateStats();
