@@ -6,6 +6,8 @@ let turns = 0;
 let selectedNumCans = 5;
 let alreadyWon = false;
 let lastGameResult = null;
+let gameToken = null;
+let gameStartTime = null;
 
 // ---------- DOM ELEMENTS ----------
 const cansContainer = document.getElementById('cansContainer');
@@ -55,6 +57,29 @@ async function startNewGame() {
   lastGameResult = null;
   nameForm.style.display = 'none';
   turns = 0;
+  
+  try {
+    // Request a game token from the server
+    const response = await fetch('/api/start-game', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ canCount: selectedNumCans })
+    });
+    
+    if (!response.ok) {
+      console.error('Failed to get game token');
+      return;
+    }
+    
+    const data = await response.json();
+    gameToken = data.token;
+    gameStartTime = Date.now();
+    
+  } catch (error) {
+    console.error('Error getting game token:', error);
+  }
 
   // Generate solution
   const chosenColors = COLORS.slice(0, selectedNumCans);
@@ -101,7 +126,14 @@ function checkGuess() {
 
   if (correctCount === selectedNumCans) {
     alreadyWon = true;
-    lastGameResult = { canCount: selectedNumCans, turns };
+    const gameEndTime = Date.now();
+    const gameTime = gameEndTime - gameStartTime;
+    lastGameResult = { 
+      canCount: selectedNumCans, 
+      turns,
+      token: gameToken,
+      gameTime
+    };
     nameForm.style.display = 'inline-block'; // show name form
   }
 
@@ -315,8 +347,14 @@ async function submitName() {
     alert('Invalid name. Must be 1–15 characters.');
     return;
   }
-  const { canCount, turns } = lastGameResult;
-  const bodyData = { canCount, turns, name: playerName };
+  const { canCount, turns, token, gameTime } = lastGameResult;
+  const bodyData = { 
+    canCount, 
+    turns, 
+    name: playerName,
+    token,
+    gameTime
+  };
 
   try {
     const resp = await fetch('/api/scores', {
@@ -329,7 +367,8 @@ async function submitName() {
       playerNameInput.value = '';
       await fetchAndDisplayScoreboard();
     } else {
-      alert('Error submitting score.');
+      const data = await resp.json();
+      alert(`Error submitting score: ${data.error || 'Unknown error'}`);
     }
   } catch (err) {
     console.error('Error submitting score:', err);
