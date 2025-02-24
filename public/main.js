@@ -174,10 +174,27 @@ function handleTouchStart(e) {
   
   touchedElement = e.target;
   draggedIndex = parseInt(touchedElement.dataset.index, 10);
-  touchedElement.classList.add('dragging');
+  touchedElement.classList.add('touch-dragging'); // Use a different class for touch
+  
+  // Create a drag preview element that follows the finger
+  const canRect = touchedElement.getBoundingClientRect();
+  const dragPreview = document.createElement('div');
+  dragPreview.id = 'drag-preview';
+  dragPreview.className = 'can drag-preview';
+  dragPreview.style.color = touchedElement.style.color;
+  dragPreview.style.position = 'fixed';
+  dragPreview.style.width = canRect.width + 'px';
+  dragPreview.style.height = canRect.height + 'px';
+  dragPreview.style.zIndex = '1000';
+  
+  // Set initial position
+  const touch = e.touches[0];
+  dragPreview.style.left = (touch.clientX - canRect.width/2) + 'px';
+  dragPreview.style.top = (touch.clientY - canRect.height/2) + 'px';
+  
+  document.body.appendChild(dragPreview);
   
   // Store original position
-  const touch = e.touches[0];
   originalX = touch.clientX;
   originalY = touch.clientY;
 }
@@ -188,6 +205,13 @@ function handleTouchMove(e) {
   if (!touchedElement) return;
   
   const touch = e.touches[0];
+  
+  // Move the can with the finger - update visual position of "clone"
+  const dragPreview = document.getElementById('drag-preview');
+  if (dragPreview) {
+    dragPreview.style.left = (touch.clientX - 25) + 'px'; // Half the can width
+    dragPreview.style.top = (touch.clientY - 45) + 'px';  // Half the can height
+  }
   
   // Find the element at this position
   const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -227,8 +251,14 @@ function handleTouchEnd(e) {
   }
   
   // Cleanup
-  touchedElement.classList.remove('dragging');
+  touchedElement.classList.remove('touch-dragging');
   touchedElement = null;
+  
+  // Remove the drag preview
+  const dragPreview = document.getElementById('drag-preview');
+  if (dragPreview) {
+    dragPreview.remove();
+  }
 }
 
 // ---------- SCOREBOARD ----------
